@@ -23,11 +23,12 @@ Open http://localhost:8080. `PORT` defaults to 8080; the server binds to `0.0.0.
 
 ## What works
 
+- Hindi is the default on first visit. Switch between हिन्दी and English; the choice is saved. The full interface and both Gemini branches use the selected language. Input can be Hindi or English. Existing task text never changes when the language changes.
 - Paste up to 4,000 characters or use the clearly labeled appointment example. Two real server-side Gemini calls provide an explanation, manageable steps, preparation suggestions, questions, and an independent caution review.
 - Select suggestions before adding them to My day. No task is saved automatically. Add manual tasks, choose or change optional dates, mark tasks as done, and delete them.
 - On opening the page, see overdue, due-today, and upcoming counts plus the next incomplete task. Dates are compared as local calendar dates. Relative dates require clarification and all task dates are user-selected.
 - Approved tasks and the text-size preference persist in this browser's localStorage. The pasted message and full AI response are not persisted. Approved tasks may retain AI preparation suggestions. Clear saved data is available with a confirmation.
-- Responsive two-column desktop layout and message-first mobile layout. Native labeled controls, 20px default body text, larger-text mode, visible focus, keyboard operation, and optional browser speech synthesis with Listen and Stop reading.
+- Responsive two-column desktop layout and message-first mobile layout. Native labeled controls, 20px default body text, larger-text mode, visible focus, keyboard operation, and optional browser speech features. See the separate browser-speech notes below.
 - Honest loading and retry states. Both AI branches must succeed. Input remains visible after failures. No fake AI fallback.
 
 ## Actual backend DAG
@@ -49,11 +50,17 @@ The collapsed “How this was prepared” disclosure shows real completed, faile
 
 ## AI and security limits
 
-The only GenAI service is Google Gemini on Vertex AI, model `gemini-3.8-flash`, through pinned `@google/genai` **2.23.0** with `vertexai: true`, global model endpoint and thinking level `LOW`. Every valid accepted explanation uses exactly two independent calls, with 2,200 output tokens per branch, one SDK attempt, a 40-second upstream timeout, and a 45-second workflow deadline. There are at most two active workflows and four active SDK calls per process. Global admission is capped at 20 requests per minute per process; excess requests receive HTTP 429 and Retry-After. Request bodies are capped at 20 KB. Cloud Run is capped at one instance; these in-memory limits reset when an instance restarts.
+The only GenAI service is Google Gemini on Vertex AI, model `gemini-3.8-flash`, through pinned `@google/genai` **2.23.0** with `vertexai: true`, global model endpoint and thinking level `LOW`. Every valid accepted explanation uses exactly two independent calls, with 3,000 output tokens per branch, one SDK attempt, a 40-second upstream timeout, and a 45-second workflow deadline. There are at most two active workflows and four active SDK calls per process. Global admission is capped at 20 requests per minute per process; excess requests receive HTTP 429 and Retry-After. Request bodies are capped at 20 KB. Cloud Run is capped at one instance; these in-memory limits reset when an instance restarts.
 
 No login, database, additional AI provider, link fetching, tools, external actions, credentials in browser code, or background notifications. Pasted content is untrusted data and model text is rendered through textContent, never HTML. Strict same-origin CSP, no CORS permission, cross-site browser POST rejection, bounded fields, fixed static-file routes, and non-root container runtime reduce exposure. Application logs record only failure categories, not pasted text or model output. Managed infrastructure may retain request metadata. Google processes the message, as stated before submission.
 
 The model can be wrong, miss risk indicators, or produce unsuitable advice. Review signals do not guarantee safety and are not definitive scam verdicts. Important medical, financial, and appointment details need independent confirmation. Browser data is accessible to people using the same browser profile and does not sync between devices. Speech availability and processing depend on the browser and operating system. Cancelling an SDK request does not guarantee provider-side compute has stopped. This short-lived public demo has basic throttling, not production abuse protection.
+
+## Browser speech (separate from GenAI)
+
+Optional browser SpeechRecognition uses `hi-IN` or `en-IN`. It starts only on a click, appends final speech to existing text, and never submits automatically. Users review and edit before sending. It stops on completion, Stop, language change, AI submission, reading aloud, or leaving the page. Microphone denial, silence, network failure and unsupported browsers retain a typing fallback. The browser may use its own online speech service; Daywell adds no speech provider or credentials.
+
+SpeechSynthesis loads voices and handles `voiceschanged`, selects a matching Hindi or English voice, cancels prior speech, and offers Listen and Stop reading. Missing language voices produce an honest notice; Hindi is never silently read with an English voice. The demo browser exposed the Hindi voice Lekha, and programmatic speaking/stop states passed. The user confirmed the real local microphone check succeeded. Audio intelligibility has not been independently assessed by the agent. Browser support varies.
 
 ## Tests and deployment
 
