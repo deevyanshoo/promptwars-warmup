@@ -30,7 +30,7 @@ async function generate({ message, locale, prompt, schema, signal }) {
       },
     });
     if (!response.text || response.candidates?.[0]?.finishReason !== "STOP")
-      throw new Error("Incomplete AI response");
+      throw new Error(`Incomplete AI response: ${response.candidates?.[0]?.finishReason || "EMPTY"}`);
     return JSON.parse(response.text);
   } finally {
     aiActive--;
@@ -165,6 +165,9 @@ export function createApp({
           JSON.stringify({
             event: "workflow_failed",
             type: error.name,
+          causeType: error.cause?.name || "unknown",
+          upstreamStatus: Number(error.cause?.status) || null,
+          responseState: error.cause?.message?.startsWith("Incomplete AI response:") ? error.cause.message : null,
             category: error.cause?.message?.startsWith("Invalid")
               ? error.cause.message
               : "upstream_or_timeout",
