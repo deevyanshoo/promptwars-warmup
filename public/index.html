@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Understand a message and decide what to do next. Daywell helps you keep track of everyday tasks.">
@@ -11,6 +11,7 @@
   <header class="header wrap">
     <a class="brand" href="/" aria-label="Daywell home">Daywell</a>
     <nav class="tabs" aria-label="Main sections"><button id="understand-tab" aria-current="location">Understand a message</button><button id="day-tab">My day <span id="task-count" class="count">0</span></button></nav>
+    <div class="language-control" role="group" aria-label="Language"><button id="language-hi" lang="hi" aria-pressed="true">हिन्दी</button><span aria-hidden="true">|</span><button id="language-en" lang="en" aria-pressed="false">English</button></div>
     <button id="text-toggle" class="quiet" aria-pressed="false">Text size: Larger</button>
   </header>
   <main id="main" class="wrap">
@@ -22,6 +23,7 @@
         <div class="form-heading"><label for="message">Your message or notice</label><button type="button" id="example" class="text-button">Try an example</button></div>
         <p id="message-help" class="muted">Paste an appointment notice, a bill, or a message you’re unsure about.</p>
         <textarea id="message" rows="5" maxlength="4000" aria-describedby="message-help privacy-note character-count" placeholder="Paste or type your message here" required></textarea>
+        <div class="voice-controls"><button type="button" id="voice-input">Speak to type</button><button type="button" id="voice-stop" hidden>Stop dictation</button></div><p id="voice-status" class="muted" role="status"></p><p class="voice-notice muted">Your browser may use an online service to turn speech into text. Review the words before sending.</p>
         <div class="input-footer"><span class="muted">Example: an appointment notice</span><span id="character-count" class="muted">0 / 4,000</span></div>
         <p id="privacy-note" class="privacy">Your message is sent to Google Gemini to prepare an explanation. Leave out passwords, payment details, and private information.</p>
         <button type="submit" id="understand-button" class="primary">Explain this message</button>

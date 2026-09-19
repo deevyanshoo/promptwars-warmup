@@ -13,14 +13,14 @@ const ai = new GoogleGenAI({
   httpOptions: { timeout: 40000, retryOptions: { attempts: 1 } },
 });
 let aiActive = 0;
-async function generate({ message, prompt, schema, signal }) {
+async function generate({ message, locale, prompt, schema, signal }) {
   if (aiActive >= 4) throw new Error('AI concurrency capacity reached');
   aiActive++;
   try {
     const response = await ai.models.generateContent({
       model, contents: JSON.stringify({ untrustedMessage: message }),
-      config: { systemInstruction: prompt, responseMimeType: 'application/json', responseJsonSchema: schema,
-        maxOutputTokens: 2200, thinkingConfig: { thinkingLevel: 'LOW' }, abortSignal: signal },
+      config: { systemInstruction: `${prompt}\nToday's date is ${new Date().toISOString().slice(0, 10)}. Write every display string in ${locale === 'hi' ? 'simple conversational Hindi using Devanagari' : 'plain English'}. Accept Hindi or English source text. Preserve source names, dates, times, amounts and uncertainties accurately. Do not translate or modify the source message itself. Keep JSON keys and enum values in English.`, responseMimeType: 'application/json', responseJsonSchema: schema,
+        maxOutputTokens: 3000, thinkingConfig: { thinkingLevel: 'LOW' }, abortSignal: signal },
     });
     if (!response.text || response.candidates?.[0]?.finishReason !== 'STOP') throw new Error('Incomplete AI response');
     return JSON.parse(response.text);
@@ -29,6 +29,7 @@ async function generate({ message, prompt, schema, signal }) {
 
 const staticFiles = new Map([
   ['/', ['public/index.html', 'text/html; charset=utf-8']],
+  ['/i18n.js', ['public/i18n.js', 'text/javascript; charset=utf-8']],
   ['/app.js', ['public/app.js', 'text/javascript; charset=utf-8']],
   ['/styles.css', ['public/styles.css', 'text/css; charset=utf-8']],
   ['/task-utils.js', ['public/task-utils.js', 'text/javascript; charset=utf-8']],
@@ -40,7 +41,7 @@ export function createApp({ workflow = createWorkflow(generate), limit = 20 } = 
     const headers = {
       'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
       'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()', 'Cache-Control': 'no-store',
+      'Permissions-Policy': 'camera=(), microphone=(self), geolocation=()', 'Cache-Control': 'no-store',
     };
     const send = (status, body, extra = {}) => {
       if (res.destroyed || res.writableEnded) return;
@@ -78,7 +79,7 @@ export function createApp({ workflow = createWorkflow(generate), limit = 20 } = 
       let body;
       try { body = JSON.parse(Buffer.concat(chunks).toString('utf8')); }
       catch { return send(400, { error: 'The message could not be read. Please try again.' }); }
-      const result = await workflow(body?.message, { timeoutMs: 45000, signal: controller.signal });
+      const result = await workflow(body?.message, { timeoutMs: 45000, signal: controller.signal, locale: body?.locale });
       if (!res.writableEnded) send(200, result);
     } catch (error) {
       if (res.writableEnded) return;
@@ -87,7 +88,7 @@ export function createApp({ workflow = createWorkflow(generate), limit = 20 } = 
         error: invalid ? error.cause.message : 'We couldn’t read this message right now. Your text is still here. Please try again. Both the explanation and caution check must finish before we can show suggestions.',
         retryable: !invalid, ...(error.execution ? { execution: error.execution } : {}),
       });
-      if (!invalid) console.error(JSON.stringify({ event: 'workflow_failed', type: error.name }));
+      if (!invalid) console.error(JSON.stringify({ event: 'workflow_failed', type: error.name, category: error.cause?.message?.startsWith('Invalid') ? error.cause.message : 'upstream_or_timeout' }));
     } finally { active--; clearTimeout(timer); res.off('close', disconnect); }
   });
 }
