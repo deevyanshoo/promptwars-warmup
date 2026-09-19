@@ -10,7 +10,7 @@ const ai = new GoogleGenAI({
   vertexai: true,
   project: process.env.GOOGLE_CLOUD_PROJECT || "promptwars-divyanshu-260919",
   location: process.env.GOOGLE_CLOUD_LOCATION || "global",
-  httpOptions: { timeout: 40000, retryOptions: { attempts: 1 } },
+  httpOptions: { timeout: 40000, retryOptions: { attempts: 2, initialDelay: 2, maxDelay: 2, httpStatusCodes: [408, 429, 500, 502, 503, 504] } },
 });
 let aiActive = 0;
 async function generate({ message, locale, prompt, schema, signal }) {
