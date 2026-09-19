@@ -186,14 +186,15 @@ const templates = [
 ];
 export function tr(text) {
   if (typeof text !== "string") return text;
+  const normalized = text.replace(/\s+/g, " ").trim();
   if (locale !== "hi")
     return (
-      Object.entries(translations).find(([, value]) => value === text)?.[0] ||
+      Object.entries(translations).find(([, value]) => value === normalized)?.[0] ||
       text
     );
-  if (translations[text]) return translations[text];
+  if (translations[normalized]) return translations[normalized];
   for (const [pattern, replacement] of templates)
-    if (pattern.test(text)) return text.replace(pattern, replacement);
+    if (pattern.test(normalized)) return normalized.replace(pattern, replacement);
   return text;
 }
 export function getLocale() {

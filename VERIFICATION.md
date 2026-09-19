@@ -2,7 +2,7 @@
 
 ## Automated tests
 
-`npm test`: **16 passed, 0 failed** after locale support. Tests cover concurrent branch starts, join ordering, dependency-only outputs, at-most-once execution, failure blocking, duplicate IDs, missing dependencies, cycles, deadlines, request isolation, invalid input without AI calls, malformed AI outputs, risk replacement, dates, HTTP validation, throttling, locale propagation and source preservation.
+`npm test`: **17 passed, 0 failed** after locale support and the multiline translation regression fix. Tests cover concurrent branch starts, join ordering, dependency-only outputs, at-most-once execution, failure blocking, duplicate IDs, missing dependencies, cycles, deadlines, request isolation, invalid input without AI calls, malformed AI outputs, risk replacement, dates, HTTP validation, throttling, locale propagation and source preservation.
 
 Palette contrast checks: main text on white 13.13:1; secondary text 7.33:1; primary button 8.53:1; placeholder 5.86:1; input border 4.38:1; focus ring on canvas 6.22:1; warning text 7.81:1. Hover and disabled states also passed their checks.
 
