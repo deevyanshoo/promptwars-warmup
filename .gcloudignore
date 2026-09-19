@@ -1,0 +1,9 @@
+*
+!package.json
+!package-lock.json
+!server.mjs
+!Dockerfile
+!lib/
+!lib/**
+!public/
+!public/**

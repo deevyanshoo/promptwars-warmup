@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Understand a message and decide what to do next. Daywell helps you keep track of everyday tasks.">
+  <title>Daywell | Your day, one step at a time</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="/styles.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+  <header class="header wrap">
+    <a class="brand" href="/" aria-label="Daywell home">Daywell</a>
+    <nav class="tabs" aria-label="Main sections"><button id="understand-tab" aria-current="location">Understand a message</button><button id="day-tab">My day <span id="task-count" class="count">0</span></button></nav>
+    <button id="text-toggle" class="quiet" aria-pressed="false">Text size: Larger</button>
+  </header>
+  <main id="main" class="wrap">
+    <div class="page-heading"><h1 id="understand-heading" tabindex="-1">What would you like help with?</h1><p>Understand a message and decide what to do next.</p></div>
+    <p id="storage-warning" class="notice error" role="alert" hidden></p>
+    <div class="app-grid">
+    <section id="understand-panel" aria-labelledby="understand-heading">
+      <form id="message-form" class="message-card" novalidate>
+        <div class="form-heading"><label for="message">Your message or notice</label><button type="button" id="example" class="text-button">Try an example</button></div>
+        <p id="message-help" class="muted">Paste an appointment notice, a bill, or a message you’re unsure about.</p>
+        <textarea id="message" rows="5" maxlength="4000" aria-describedby="message-help privacy-note character-count" placeholder="Paste or type your message here" required></textarea>
+        <div class="input-footer"><span class="muted">Example: an appointment notice</span><span id="character-count" class="muted">0 / 4,000</span></div>
+        <p id="privacy-note" class="privacy">Your message is sent to Google Gemini to prepare an explanation. Leave out passwords, payment details, and private information.</p>
+        <button type="submit" id="understand-button" class="primary">Explain this message</button>
+        <p id="request-status" role="status" aria-live="polite"></p>
+        <div id="request-error" class="notice error" role="alert" hidden><p id="error-text"></p><button id="retry" type="button">Try again</button></div>
+      </form>
+      <p class="local-note">Your pasted message is not saved by Daywell. You choose which steps to keep.</p>
+      <section id="result" class="result" aria-labelledby="result-heading" hidden>
+        <div class="section-heading"><div><p class="eyebrow">Explanation</p><h2 id="result-heading" tabindex="-1">Here’s what the message means</h2></div><div class="speech-controls"><button type="button" id="read-aloud">Listen</button><button type="button" id="stop-reading">Stop reading</button></div></div>
+        <p id="summary" class="summary"></p><p id="speech-status" class="muted" role="status"></p>
+        <div id="risk-notice" class="notice" hidden></div>
+        <div id="cautions-block"><h3>Things to check</h3><ul id="cautions"></ul></div>
+        <div id="questions-block"><h3>A detail to clarify</h3><ul id="questions"></ul><p class="muted">You can update the message above with the missing details and ask again. Please don’t include sensitive information.</p></div>
+        <div id="preparation-block"><h3>Before you start</h3><ul id="preparation"></ul></div>
+        <form id="selection-form"><h3>Choose your next steps</h3><p>Nothing is added until you choose it. Dates are always yours to set.</p><div id="suggestions"></div><label for="suggestion-date">Due date for selected steps <span class="muted">(optional)</span></label><input type="date" id="suggestion-date" min="1900-01-01" max="2100-12-31"><button class="primary" id="add-selected" type="submit">Add to my day</button><p id="selection-status" role="status"></p></form>
+        <p class="muted">AI suggestions are advisory. A caution check cannot guarantee a message is safe. Daywell has not contacted anyone or completed any action.</p>
+      </section>
+      <details id="execution-details" hidden><summary>How this was prepared</summary><p>Two separate Google Gemini checks must both succeed before a plan is shown.</p><ol id="execution-list"></ol></details>
+    </section>
+    <section id="day-panel" aria-labelledby="day-heading">
+      <div class="section-heading"><div><p class="eyebrow">Your saved tasks</p><h2 id="day-heading" tabindex="-1">My day</h2></div><span id="day-total" class="private-label"></span></div>
+      <p id="today" class="muted"></p><div id="next-action" class="notice"></div><div id="task-list"></div>
+      <p class="muted">Your tasks and text preference stay in this browser on this device. Dates are checked while Daywell is open. No background reminders or notifications are sent.</p>
+      <form id="manual-form" class="manual-form"><div><label for="task-title">Add a task</label><input id="task-title" maxlength="280" placeholder="For example, call a friend" required></div><div><label for="task-date">Due date (optional)</label><input type="date" id="task-date" min="1900-01-01" max="2100-12-31"></div><button type="submit" class="primary">Add a task</button></form>
+      <p id="task-status" role="status"></p>
+      <div class="data-controls"><p>Using a shared device? You can remove Daywell’s saved tasks and preferences.</p><button id="clear-data" class="danger" type="button">Clear my saved data</button><div id="clear-confirm" class="notice" hidden><p>This will remove all Daywell tasks and reset your text preference in this browser. This cannot be undone.</p><button id="confirm-clear" class="danger">Yes, clear my data</button> <button id="cancel-clear">Keep my data</button></div></div>
+    </section>
+    </div>
+    <noscript><p class="notice error">Please enable JavaScript to understand messages and manage your day.</p></noscript>
+  </main>
+  <footer class="wrap"><strong>Daywell</strong><p>Check important details with someone you trust. Daywell can make mistakes and does not provide medical or financial advice.</p></footer>
+</body>
+</html>
